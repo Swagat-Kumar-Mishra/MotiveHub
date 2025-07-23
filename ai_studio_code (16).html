@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Motive Hub</title>
+    
+    <!-- PWA STUFF ADDED HERE -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#111111">
+    <!-- END OF PWA STUFF -->
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: white;
+            --shadow-color: rgba(0, 0, 0, 0.8);
+            --button-bg: rgba(255, 255, 255, 0.1);
+            --button-hover-bg: rgba(255, 255, 255, 0.25);
+            --font-family: 'Poppins', sans-serif;
+            --button-size: 55px;
+            --background-image: url('');
+        }
+
+        @keyframes fadeInSlideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeOutSlideDown {
+            from { opacity: 1; transform: translateY(0); }
+            to { opacity: 0; transform: translateY(-20px); }
+        }
+        
+        @keyframes backgroundZoom {
+            0% { background-size: 100% 100%; }
+            100% { background-size: 110% 110%; }
+        }
+        
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: var(--primary-color); }
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            font-family: var(--font-family);
+            background-image: var(--background-image);
+            background-color: #111;
+            background-position: center;
+            background-size: cover;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            overflow: hidden;
+            transition: background-image 0.8s ease-in-out;
+            animation: backgroundZoom 40s infinite alternate linear;
+        }
+
+        .header {
+            position: absolute;
+            top: 20px;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 0 20px;
+            box-sizing: border-box;
+        }
+        
+        .title-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .animated-title {
+            color: var(--primary-color);
+            font-size: 1.5em;
+            font-weight: 700;
+            text-shadow: 1px 1px 2px var(--shadow-color);
+            overflow: hidden;
+            border-right: .15em solid var(--primary-color);
+            white-space: nowrap;
+            letter-spacing: .1em;
+            animation: 
+                typing 2s steps(10, end),
+                blink-caret .75s step-end infinite;
+        }
+
+        #category-title {
+            color: var(--primary-color);
+            background-color: rgba(0,0,0,0.4);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            text-shadow: 1px 1px 2px var(--shadow-color);
+            transition: all 0.4s ease;
+        }
+
+        .container {
+            padding: 20px;
+            color: var(--primary-color);
+            max-width: 90%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #quote-text {
+            font-size: 2.2em;
+            font-weight: bold;
+            text-shadow: 2px 2px 6px var(--shadow-color);
+            margin-bottom: 50px;
+            min-height: 150px;
+            display: flex;
+            align-items: center;
+            transition: color 0.4s ease;
+        }
+        
+        #quote-text.fade-out {
+            animation: fadeOutSlideDown 0.4s ease-in-out forwards;
+        }
+        
+        #quote-text.fade-in {
+            animation: fadeInSlideUp 0.4s ease-in-out forwards;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .icon-button {
+            background-color: var(--button-bg);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-radius: 50%;
+            width: var(--button-size);
+            height: var(--button-size);
+            font-size: 1.6em;
+            color: var(--primary-color);
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background-color 0.3s, transform 0.2s, color 0.4s, opacity 0.3s;
+        }
+        .icon-button:hover {
+            background-color: var(--button-hover-bg);
+            transform: translateY(-3px);
+        }
+        .icon-button:active {
+            transform: scale(0.9);
+        }
+        .icon-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            background-color: var(--button-bg);
+        }
+        
+        #favorite-button.favorited {
+            background-color: #E91E63;
+            color: white;
+            border-color: #E91E63;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div class="title-container">
+            <h1 class="animated-title">Motive Hub</h1>
+            <h2 id="category-title">Inspiration</h2>
+        </div>
+    </div>
+
+    <div class="container">
+        <h1 id="quote-text">Welcome to Motive Hub! Tap anywhere to begin.</h1>
+        <div class="button-container">
+            <button class="icon-button" id="prev-quote-button" disabled>←</button>
+            <button class="icon-button" id="share-button">📤</button>
+            <button class="icon-button" id="favorite-button">♡</button>
+        </div>
+    </div>
+
+    <script>
+        const quotesByCategory = { 
+            "Motivation": [
+                "Push yourself, because no one else is going to do it for you.",
+                "The secret of getting ahead is getting started.",
+                "It’s not whether you get knocked down, it’s whether you get up.",
+                "The harder you work for something, the greater you'll feel when you achieve it.",
+                "Don't stop when you're tired. Stop when you're done.",
+                "Success is not final, failure is not fatal: it is the courage to continue that counts.",
+                "Believe you can and you're halfway there.",
+                "The only limit to our realization of tomorrow will be our doubts of today.",
+                "Act as if what you do makes a difference. It does.",
+                "The future belongs to those who believe in the beauty of their dreams.",
+                "Do what you can, with what you have, where you are.",
+                "It always seems impossible until it's done.",
+                "Start where you are. Use what you have. Do what you can.",
+                "I find that the harder I work, the more luck I seem to have.",
+                "The way to get started is to quit talking and begin doing.",
+                "Dream big and dare to fail.",
+                "Your time is limited, so don't waste it living someone else's life.",
+                "Strive not to be a success, but rather to be of value.",
+                "The mind is everything. What you think you become.",
+                "The only way to do great work is to love what you do.",
+                "If you can dream it, you can achieve it.",
+                "Winning isn’t everything, but wanting to win is.",
+                "I am not a product of my circumstances. I am a product of my decisions.",
+                "The best time to plant a tree was 20 years ago. The second best time is now.",
+                "An unexamined life is not worth living.",
+                "Eighty percent of success is showing up.",
+                "Your imagination is your preview of life’s coming attractions.",
+                "The only thing we have to fear is fear itself.",
+                "What you get by achieving your goals is not as important as what you become by achieving your goals.",
+                "We become what we think about.",
+                "The mind is the limit. As long as the mind can envision the fact that you can do something, you can do it.",
+                "A person who never made a mistake never tried anything new.",
+                "He who has a why to live can bear almost any how.",
+                "The journey of a thousand miles begins with a single step.",
+                "Either you run the day, or the day runs you.",
+                "Life is 10% what happens to me and 90% of how I react to it.",
+                "The person who says it cannot be done should not interrupt the person who is doing it.",
+                "Build your own dreams, or someone else will hire you to build theirs.",
+                "The best revenge is massive success.",
+                "There is no substitute for hard work.",
+                "I have not failed. I’ve just found 10,000 ways that won’t work.",
+                "A successful man is one who can lay a firm foundation with the bricks others have thrown at him.",
+                "No one can make you feel inferior without your consent.",
+                "The whole secret of a successful life is to find out what is one’s destiny to do, and then do it.",
+                "If you’re going through hell, keep going.",
+                "The will to win, the desire to succeed, the urge to reach your full potential... these are the keys that will unlock the door to personal excellence.",
+                "Fall seven times and stand up eight.",
+                "Everything you’ve ever wanted is on the other side of fear.",
+                "Success is stumbling from failure to failure with no loss of enthusiasm.",
+                "You must be the change you wish to see in the world.",
+                "What seems to us as bitter trials are often blessings in disguise.",
+                "The distance between insanity and genius is measured only by success.",
+                "Don't be afraid to give up the good to go for the great.",
+                "Don't let the fear of losing be greater than the excitement of winning.",
+                "The successful warrior is the average man, with laser-like focus.",
+                "You can't build a reputation on what you are going to do.",
+                "If you want to lift yourself up, lift up someone else.",
+                "The only place where success comes before work is in the dictionary.",
+                "Too many of us are not living our dreams because we are living our fears.",
+                "I find that the great thing in this world is not so much where we stand, as in what direction we are moving.",
+                "Whatever the mind of man can conceive and believe, it can achieve.",
+                "Strive for progress, not perfection.",
+                "Keep your face always toward the sunshine—and shadows will fall behind you.",
+                "The future starts today, not tomorrow.",
+                "The only thing standing between you and your goal is the bullshit story you keep telling yourself as to why you can't achieve it.",
+                "You don't have to be great to start, but you have to start to be great.",
+                "Things work out best for those who make the best of how things work out.",
+                "Show me a person who has never made a mistake and I'll show you someone who has never achieved much.",
+                "Don’t count the days, make the days count.",
+                "A goal is a dream with a deadline.",
+                "Action is the foundational key to all success.",
+                "The secret of success is to do the common thing uncommonly well.",
+                "You are never too old to set another goal or to dream a new dream.",
+                "I can’t change the direction of the wind, but I can adjust my sails to always reach my destination.",
+                "Perfection is not attainable, but if we chase perfection we can catch excellence.",
+                "The only person you are destined to become is the person you decide to be.",
+                "Believe in yourself! Have faith in your abilities! Without a humble but reasonable confidence in your own powers you cannot be successful or happy.",
+                "If you want to make a permanent change, stop focusing on the size of your problems and start focusing on the size of you!",
+                "You must expect great things of yourself before you can do them.",
+                "Motivation is what gets you started. Habit is what keeps you going.",
+                "Our greatest weakness lies in giving up. The most certain way to succeed is always to try just one more time.",
+                "If you are not willing to risk the usual you will have to settle for the ordinary.",
+                "All our dreams can come true if we have the courage to pursue them.",
+                "Success is not the key to happiness. Happiness is the key to success. If you love what you are doing, you will be successful.",
+                "It is better to fail in originality than to succeed in imitation.",
+                "The road to success and the road to failure are almost exactly the same.",
+                "I failed my way to success.",
+                "It is not the mountain we conquer but ourselves.",
+                "To accomplish great things, we must not only act, but also dream; not only plan, but also believe.",
+                "Good things come to people who wait, but better things come to those who go out and get them.",
+                "Success is the sum of small efforts, repeated day-in and day-out.",
+                "If you don't design your own life plan, chances are you'll fall into someone else's plan. And guess what they have planned for you? Not much.",
+                "What lies behind us and what lies before us are tiny matters compared to what lies within us.",
+                "The difference between a stumbling block and a stepping stone is how high you raise your foot.",
+                "You can't let your failures define you. You have to let your failures teach you.",
+                "Obstacles are those frightful things you see when you take your eyes off your goal.",
+                "Failure is the condiment that gives success its flavor.",
+                "Don't let what you cannot do interfere with what you can do.",
+                "You may have to fight a battle more than once to win it.",
+                "A creative man is motivated by the desire to achieve, not by the desire to beat others.",
+                "Do not wait to strike till the iron is hot; but make the iron hot by striking.",
+                "Whether you think you can or you think you can’t, you’re right.",
+                "The art of living lies less in eliminating our troubles than in growing with them.",
+                "The first step toward success is taken when you refuse to be a captive of the environment in which you first find yourself.",
+                "When you get to the end of your rope, tie a knot and hang on.",
+                "Do what you have to do until you can do what you want to do.",
+                "Start where you are with what you have. Make something of it and never be satisfied.",
+                "It’s not about perfect. It’s about effort.",
+                "Your desire to change must be greater than your desire to stay the same.",
+                "Be stubborn about your goals and flexible about your methods.",
+                "Hardships often prepare ordinary people for an extraordinary destiny.",
+                "The path to success is to take massive, determined action.",
+                "Don't be afraid of the space between your dreams and reality. If you can dream it, you can make it so.",
+                "The man on top of the mountain didn't fall there.",
+                "If it doesn't challenge you, it won't change you.",
+                "Success is where preparation and opportunity meet.",
+                "Little by little, a little becomes a lot.",
+                "The pain you feel today will be the strength you feel tomorrow.",
+                "Without hustle, talent will only carry you so far.",
+                "The key to success is to start before you are ready.",
+                "You are capable of more than you know.",
+                "The best way to get things done is to simply begin.",
+                "Don't wait for opportunity. Create it.",
+                "Your only limit is you.",
+                "The biggest risk is not taking any risk.",
+                "You're not obligated to win. You're obligated to keep trying to do the best you can every day.",
+                "The difference between who you are and who you want to be is what you do.",
+                "Go the extra mile. It's never crowded.",
+                "You will never know your limits unless you push yourself to them.",
+                "Nothing will work unless you do.",
+                "Do something today that your future self will thank you for.",
+                "It’s going to be hard, but hard does not mean impossible.",
+                "Sometimes we’re tested not to show our weaknesses, but to discover our strengths.",
+                "The secret to your future is hidden in your daily routine.",
+                "The one thing that you have that nobody else has is you. Your voice, your mind, your story, your vision.",
+                "Wake up with determination. Go to bed with satisfaction.",
+                "I am not interested in competing with anyone. I hope we all make it.",
+                "Don’t stop until you’re proud.",
+                "Make it happen. Shock everyone.",
+                "The moment you doubt whether you can fly, you cease for ever to be able to do it.",
+                "If you can't stop thinking about it, don't stop working for it.",
+                "Even the greatest were beginners. Don't be afraid to take that first step.",
+                "You have to be at your strongest when you’re feeling at your weakest.",
+                "Set a goal that makes you want to jump out of bed in the morning.",
+                "What you're supposed to do when you don't like a thing is change it. If you can't change it, change the way you think about it. Don't complain.",
+                "Be so good they can't ignore you.",
+                "You can't use up creativity. The more you use, the more you have.",
+                "If you want to achieve excellence, you can get there today. As of this second, quit doing less-than-excellent work.",
+                "The most effective way to do it, is to do it.",
+                "Motivation is the art of getting people to do what you want them to do because they want to do it.",
+                "If you hear a voice within you say 'you cannot paint,' then by all means paint and that voice will be silenced.",
+                "There is no great genius without some touch of madness.",
+                "The thing about motivation is that it’s not a one-time thing. You have to keep it up.",
+                "Motivation comes from working on things we care about.",
+                "The only way to achieve the impossible is to believe it is possible.",
+                "Focus on being productive instead of busy.",
+                "Productivity is never an accident. It is always the result of a commitment to excellence, intelligent planning, and focused effort.",
+                "Your life is controlled by what you focus on.",
+                "Concentrate all your thoughts upon the work at hand. The sun's rays do not burn until brought to a focus.",
+                "The successful man is the one who finds out what is the matter with his business before his competitors do.",
+                "The real test is not whether you avoid this failure, because you won't. It's whether you let it harden or shame you into inaction, or whether you learn from it; whether you choose to persevere.",
+                "Success is not built on success. It's built on failure. It's built on frustration. Sometimes its built on catastrophe.",
+                "We can do anything we want to do if we stick to it long enough.",
+                "The question isn’t who is going to let me; it’s who is going to stop me.",
+                "If you have everything under control, you're not moving fast enough.",
+                "I’d rather be optimistic and wrong than pessimistic and right.",
+                "You don't need to see the whole staircase, just take the first step.",
+                "You are the master of your destiny. You can influence, direct and control your own environment.",
+                "The number one reason people fail in life is because they listen to their friends, family, and neighbors.",
+                "You can have everything in life you want, if you will just help other people get what they want.",
+                "The starting point of all achievement is desire.",
+                "The purpose of our lives is to be happy.",
+                "Get busy living or get busy dying.",
+                "You only live once, but if you do it right, once is enough.",
+                "Many of life's failures are people who did not realize how close they were to success when they gave up.",
+                "If you want to live a happy life, tie it to a goal, not to people or things.",
+                "Never let the fear of striking out keep you from playing the game.",
+                "Money and success don’t change people; they merely amplify what is already there.",
+                "Your time is limited, don’t waste it living someone else’s life. Don’t be trapped by dogma – which is living with the results of other people’s thinking.",
+                "Not how long, but how well you have lived is the main thing.",
+                "If life were predictable it would cease to be life, and be without flavor.",
+                "The whole secret of a successful life is to find out what is one’s destiny to do, and then do it.",
+                "In order to write about life first you must live it.",
+                "The big lesson in life, baby, is never be scared of anyone or anything.",
+                "Curiosity about life in all of its aspects, I think, is still the secret of great creative people.",
+                "Life is not a problem to be solved, but a reality to be experienced.",
+                "The unexamined life is not worth living.",
+                "Turn your wounds into wisdom.",
+                "The purpose of life is not to be happy. It is to be useful, to be honorable, to be compassionate, to have it make some difference that you have lived and lived well.",
+                "You will face many defeats in life, but never let yourself be defeated.",
+                "The greatest glory in living lies not in never falling, but in rising every time we fall.",
+                "Life is a succession of lessons which must be lived to be understood.",
+                "Never be bullied into silence. Never allow yourself to be made a victim. Accept no one's definition of your life; define yourself.",
+                "Life is trying things to see if they work.",
+                "When one door of happiness closes, another opens; but often we look so long at the closed door that we do not see the one which has been opened for us.",
+                "Life is what we make it, always has been, always will be.",
+                "The greatest pleasure in life is doing what people say you cannot do.",
+                "Life’s tragedy is that we get old too soon and wise too late.",
+                "Life is about making an impact, not making an income.",
+                "I'm the one that's got to die when it's time for me to die, so let me live my life the way I want to.",
+                "You get in life what you have the courage to ask for.",
+                "Life is a daring adventure or nothing at all.",
+                "In the end, it's not the years in your life that count. It's the life in your years.",
+                "You have brains in your head. You have feet in your shoes. You can steer yourself any direction you choose.",
+                "Life is a flower of which love is the honey.",
+                "Keep smiling, because life is a beautiful thing and there's so much to smile about.",
+                "The more you praise and celebrate your life, the more there is in life to celebrate.",
+                "Life is a song - sing it. Life is a game - play it. Life is a challenge - meet it. Life is a dream - realize it. Life is a sacrifice - offer it. Life is love - enjoy it.",
+                "The two most important days in your life are the day you are born and the day you find out why.",
+                "Life is what you make it. No matter what, you're going to mess up sometimes, it's a universal truth.",
+                "Don't settle for what life gives you; make life better and build something.",
+                "The purpose of life, after all, is to live it, to taste experience to the utmost, to reach out eagerly and without fear for newer and richer experience.",
+                "Everything in life is luck.",
+                "Life is like riding a bicycle. To keep your balance, you must keep moving.",
+                "The trick in life is learning how to deal with it.",
+                "Live for each second without hesitation.",
+                "The best portion of a good man's life is his little nameless, unencumbered acts of kindness and of love.",
+                "You're only here for a short visit. Don't hurry, don't worry. And be sure to smell the flowers along the way.",
+                "The minute that you're not learning I believe you're dead.",
+                "The aim of life is to live, and to live means to be aware, joyously, drunkenly, serenely, divinely aware.",
+                "The first cause of a person's working is that he is alive.",
+                "Life is a mirror and will reflect back to the thinker what he thinks into it.",
+                "Nobody who ever gave his best regretted it.",
+                "Make each day your masterpiece.",
+                "Don't judge each day by the harvest you reap but by the seeds that you plant.",
+                "The most important thing is to enjoy your life—to be happy—it's all that matters.",
+                "I enjoy life when things are happening. I don't care if it's good things or bad things. That means you're alive.",
+                "It takes a long time to become young.",
+                "The problem is not that there are problems. The problem is expecting otherwise and thinking that having problems is a problem.",
+  
+                "A comfort zone is a beautiful place, but nothing ever grows there.",
+                "You don't always get what you wish for. You get what you work for.",
+                "The best way to appreciate your job is to imagine yourself without one.",
+                "The harder the conflict, the more glorious the triumph.",
+                "If you are working on something that you really care about, you don’t have to be pushed. The vision pulls you.",
+                "The little things? The little moments? They aren't little.",
+                "Success usually comes to those who are too busy to be looking for it.",
+                "Don’t be distracted by criticism. Remember—the only taste of success some people have is when they take a bite out of you.",
+                "I've missed more than 9,000 shots in my career. I've lost almost 300 games. 26 times I've been trusted to take the game winning shot and missed. I've failed over and over and over again in my life and that is why I succeed.",
+                "The only limit to the height of your achievements is the reach of your dreams and your willingness to work for them.",
+                "What's the point of being alive if you don't at least try to do something remarkable?",
+                "Fake it until you make it! Act as if you had all the confidence you require until it becomes your reality.",
+                "I am not afraid of storms, for I am learning how to sail my ship.",
+                "If you can't fly then run, if you can't run then walk, if you can't walk then crawl, but whatever you do you have to keep moving forward.",
+                "The struggles you are in today are developing the strength you need for tomorrow. Don't give up.",
+                "There are two ways of spreading light: to be the candle or the mirror that reflects it.",
+                "Work until your rivals become idols.",
+                "Don't let the noise of others' opinions drown out your own inner voice.",
+                "The three great essentials to achieve anything worthwhile are, first, hard work; second, stick-to-itiveness; third, common sense.",
+                "You can't be that kid standing at the top of the waterslide, overthinking it. You have to go down the chute.",
+                "The ultimate measure of a man is not where he stands in moments of comfort and convenience, but where he stands at times of challenge and controversy.",
+                "Nothing in the world can take the place of Persistence. Talent will not; nothing is more common than unsuccessful men with talent. Genius will not; unrewarded genius is almost a proverb. Education will not; the world is full of educated derelicts. The slogan 'Press On' has solved and always will solve the problems of the human race.",
+                "I think a hero is an ordinary individual who finds the strength to persevere and endure in spite of overwhelming obstacles.",
+                "Develop success from failures. Discouragement and failure are two of the surest stepping stones to success.",
+                "If you’re not a risk taker, you should get the hell out of business.",
+                "One of the greatest discoveries a man makes, one of his great surprises, is to find he can do what he was afraid he couldn't do.",
+                "Formal education will make you a living; self-education will make you a fortune.",
+                "You can't connect the dots looking forward; you can only connect them looking backwards. So you have to trust that the dots will somehow connect in your future.",
+                "Don't worry about failures, worry about the chances you miss when you don't even try.",
+                "The real opportunity for success lies within the person and not in the job.",
+                "Leap, and the net will appear.",
+                "If you want to be happy, set a goal that commands your thoughts, liberates your energy and inspires your hopes.",
+                "There is only one way to avoid criticism: do nothing, say nothing, and be nothing.",
+                "Be miserable. Or motivate yourself. Whatever has to be done, it's always your choice.",
+                "Opportunities don't happen. You create them.",
+                "The man who has confidence in himself gains the confidence of others.",
+                "The dreamers are the saviors of the world.",
+                "Talent is cheaper than table salt. What separates the talented individual from the successful one is a lot of hard work.",
+                "As we look ahead into the next century, leaders will be those who empower others.",
+                "The first responsibility of a leader is to define reality. The last is to say thank you. In between, the leader is a servant.",
+                "A true leader has the confidence to stand alone, the courage to make tough decisions, and the compassion to listen to the needs of others. He does not set out to be a leader, but becomes one by the equality of his actions and the integrity of his intent.",
+                "Leadership is the capacity to translate vision into reality.",
+                "A leader is one who knows the way, goes the way, and shows the way.",
+                "Leadership is not about a title or a designation. It's about impact, influence, and inspiration.",
+                "Effective leadership is not about making speeches or being liked; leadership is defined by results not attributes.",
+                "Anyone can hold the helm when the sea is calm.",
+                "A great person attracts great people and knows how to hold them together.",
+                "The greatest leader is not necessarily the one who does the greatest things. He is the one that gets the people to do the greatest things.",
+                "If your actions inspire others to dream more, learn more, do more and become more, you are a leader.",
+                "Innovation distinguishes between a leader and a follower.",
+                "Leadership is the art of giving people a platform for spreading ideas that work.",
+                "Leaders think and talk about the solutions. Followers think and talk about the problems.",
+                "A leader is a dealer in hope.",
+                "To handle yourself, use your head; to handle others, use your heart.",
+                "Leaders are made, they are not born. They are made by hard effort, which is the price which all of us must pay to achieve any goal that is worthwhile.",
+                "It is the character of a great man to despise injury, and to forgive it.",
+                "Great leaders are almost always great simplifiers, who can cut through argument, debate and doubt, to offer a solution everybody can understand.",
+                "The task of the leader is to get his people from where they are to where they have not been.",
+                "The art of communication is the language of leadership.",
+                "Leaders who offer blood, toil, tears and sweat always get more out of their followers than those who offer safety and a good time. When it comes to the pinch, human beings are heroic.",
+                "All of the great leaders have had one characteristic in common: it was the willingness to confront unequivocally the major anxiety of their people in their time. This, and not much else, is the essence of leadership.",
+                "Don't tell people how to do things, tell them what to do and let them surprise you with their results.",
+                "The quality of a leader is reflected in the standards they set for themselves.",
+                "A leader takes people where they want to go. A great leader takes people where they don't necessarily want to go, but ought to go.",
+                "My own definition of leadership is this: The capacity and the will to rally men and women to a common purpose and the character which inspires confidence.",
+                "Leadership is lifting a person's vision to high sights, the raising of a person's performance to a higher standard, the building of a personality beyond its normal limitations.",
+                "Never doubt that a small group of thoughtful, concerned citizens can change the world. Indeed it is the only thing that ever has.",
+                "The price of greatness is responsibility.",
+                "There are no traffic jams along the extra mile.",
+                "The most powerful weapon on earth is the human soul on fire.",
+                "If you are not obsessed with your life, you are wasting it.",
+                "Your work is going to fill a large part of your life, and the only way to be truly satisfied is to do what you believe is great work. And the only way to do great work is to love what you do.",
+                "Let the beauty of what you love be what you do.",
+                "It's not what you know, it's what you do with what you know.",
+                "You can, you should, and if you’re brave enough to start, you will.",
+                "The future of the world belongs to the youth of the world, and it is from the youth and not from the old that the fire of life will warm and enlighten the world. It is your privilege to breathe the breath of life into the nostrils of this old world.",
+                "Step out of the history that is holding you back. Step into the new story you are willing to create.",
+                "There are people who make things happen, there are people who watch things happen, and there are people who wonder what happened. To be successful, you need to be a person who makes things happen."
+            ],
+            "Life Lessons": ["In the end, we only regret the chances we didn't take.","The only impossible journey is the one you never begin.","Life is what happens when you're busy making other plans.","You can't start the next chapter of your life if you keep re-reading the last one.","The beautiful thing about learning is that nobody can take it away from you.","Life is 10% what happens to us and 90% how we react to it.","The purpose of our lives is to be happy.","Get busy living or get busy dying.","You only live once, but if you do it right, once is enough.","The unexamined life is not worth living.","Turn your wounds into wisdom.","In three words I can sum up everything I've learned about life: it goes on.","Be happy for this moment. This moment is your life.","Everything has beauty, but not everyone sees it.","The greatest glory in living lies not in never falling, but in rising every time we fall."], 
+            "Love & Loss": ["Sometimes, the heart sees what is invisible to the eye.","To love and be loved is to feel the sun from both sides.","The pain of parting is nothing to the joy of meeting again.","It is better to have loved and lost than never to have loved at all.","Don't cry because it's over, smile because it happened.","The best thing to hold onto in life is each other.","You know you're in love when you can't fall asleep because reality is finally better than your dreams.","The giving of love is an education in itself.","Grief is the price we pay for love.","What is loved is never lost.","For the world you may be one person, but to one person you may be the world.","To love at all is to be vulnerable.","Love is not finding someone to live with. It's finding someone you can't live without.","There is no remedy for love but to love more.","We accept the love we think we deserve."], 
+            "Deep Thoughts": ["We are all in the gutter, but some of us are looking at the stars.","The world is full of obvious things which nobody by any chance ever observes.","What you seek is seeking you.","The quietest people have the loudest minds.","A ship in harbor is safe, but that is not what ships are built for.","The mystery of human existence lies not in just staying alive, but in finding something to live for.","Everything we hear is an opinion, not a fact. Everything we see is a perspective, not the truth.","He who has a why to live can bear almost any how.","The soul becomes dyed with the color of its thoughts.","Not all those who wander are lost.","An unexamined life is not worth living.","Yesterday I was clever, so I wanted to change the world. Today I am wise, so I am changing myself.","The man who moves a mountain begins by carrying away small stones.","The depth of your belief and the strength of your conviction determines the power of your personality.","We are what we repeatedly do. Excellence, then, is not an act, but a habit."], 
+            "Hope & Strength": ["A diamond is a chunk of coal that did well under pressure.","Stars can't shine without darkness.","Fall seven times, stand up eight.","Smooth seas do not make skillful sailors.","Just when the caterpillar thought the world was over, it became a butterfly.","That which does not kill us makes us stronger.","Hope is the thing with feathers that perches in the soul.","The human spirit is stronger than anything that can happen to it.","It is during our darkest moments that we must focus to see the light.","Strength does not come from winning. Your struggles develop your strengths.","You have power over your mind - not outside events. Realize this, and you will find strength.","Where there is no struggle, there is no strength.","The oak fought the wind and was broken, the willow bent when it must and survived.","A hero is an ordinary individual who finds the strength to persevere and endure in spite of overwhelming obstacles.","Hope is being able to see that there is light despite all of the darkness."], 
+            "Wisdom & Philosophy": ["The only true wisdom is in knowing you know nothing.","Knowing yourself is the beginning of all wisdom.","Count your age by friends, not years. Count your life by smiles, not tears.","The journey of a thousand miles begins with a single step.","It is the mark of an educated mind to be able to entertain a thought without accepting it.","Patience is bitter, but its fruit is sweet.","An investment in knowledge pays the best interest.","Waste no more time arguing about what a good man should be. Be one.","He who is brave is free.","The greatest wealth is to live content with little.","True happiness is to enjoy the present, without anxious dependence upon the future.","All that we are is the result of what we have thought.","The wise man is one who, knows, what he does not know.","If you are depressed you are living in the past. If you are anxious you are living in thefuture. If you are at peace you are living in the present.","Be like water."], 
+            "Mindset": [
+                "The mind is a powerful thing. When you fill it with positive thoughts, your life will start to change.",
+                "Your mindset is the key to unlocking your potential.",
+                "Adopt a growth mindset. See challenges as opportunities.",
+                "Whether you think you can, or you think you can't – you're right.",
+                "A positive mindset brings positive things.",
+                "Change your mindset, change your life.",
+                "The only thing standing between you and your goal is the story you keep telling yourself that you can't achieve it.",
+                "Your mindset is a magnet. If you think of blessings, you attract blessings.",
+                "Success is a mindset. If you want success, start thinking of yourself as a success.",
+                "Cultivate a mindset of abundance. There is enough for everyone.",
+                "Don't be pushed around by the fears in your mind. Be led by the dreams in your heart.",
+                "A great mindset is not about being positive all the time. It's about understanding that setbacks are part of the path.",
+                "Your life is a reflection of your mindset.",
+                "The quality of your thinking determines huggede quality of your life.",
+                "Mindset is what separates the best from the rest.",
+                "It's not about having the right opportunities. It's about having the right mindset.",
+                "Your beliefs don't make you a better person, your behavior does. But your mindset shapes your behavior.",
+                "A growth mindset is not a declaration, it's a journey."
+            ]
+        };
+        
+        const themes = [
+            { name: 'Dark Abstract', background: "url('https://images.pexels.com/photos/2113566/pexels-photo-2113566.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2')" },
+            { name: 'Night Mountains', background: "url('https://images.pexels.com/photos/1624496/pexels-photo-1624496.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2')" },
+            { name: 'Night Sky', background: "url('https://images.pexels.com/photos/998641/pexels-photo-998641.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2')" }
+        ];
+
+        const root = document.documentElement;
+        const quoteTextElement = document.getElementById('quote-text');
+        const shareButton = document.getElementById('share-button');
+        const favoriteButton = document.getElementById('favorite-button');
+        const prevQuoteButton = document.getElementById('prev-quote-button');
+        const categoryTitle = document.getElementById('category-title');
+        
+        let currentCategory = "Motivation";
+        let favorites = JSON.parse(localStorage.getItem('motiveHubFavorites')) || [];
+        let quoteHistory = [];
+        let currentTheme;
+        let seenQuotesByCategory = {};
+        let quoteCounter = 0;
+        let themeIndex = 0;
+
+        function applyTheme(theme) {
+            currentTheme = theme;
+            root.style.setProperty('--background-image', theme.background);
+        }
+        
+        function displayQuote(quote) {
+            quoteTextElement.classList.remove('fade-in');
+            quoteTextElement.classList.add('fade-out');
+            setTimeout(() => {
+                quoteTextElement.innerText = quote;
+                updateUI();
+                quoteTextElement.classList.remove('fade-out');
+                quoteTextElement.classList.add('fade-in');
+            }, 400);
+        }
+
+        function showNewQuote() {
+            const previousQuote = quoteTextElement.innerText;
+            if (previousQuote && previousQuote !== "Welcome to Motive Hub! Tap anywhere to begin.") {
+                quoteHistory.push({ quote: previousQuote, category: currentCategory, theme: currentTheme });
+            }
+
+            quoteCounter++;
+            if (quoteCounter > 1 && (quoteCounter - 1) % 20 === 0) {
+                themeIndex = (themeIndex + 1) % themes.length;
+                applyTheme(themes[themeIndex]);
+            }
+
+            const allCategories = Object.keys(quotesByCategory);
+            let randomCategory;
+            do {
+                randomCategory = allCategories[Math.floor(Math.random() * allCategories.length)];
+            } while (randomCategory === currentCategory && allCategories.length > 1);
+            currentCategory = randomCategory;
+            
+            const quotesInCurrentCategory = quotesByCategory[currentCategory];
+            if (!seenQuotesByCategory[currentCategory] || seenQuotesByCategory[currentCategory].length >= quotesInCurrentCategory.length) {
+                seenQuotesByCategory[currentCategory] = [];
+            }
+            
+            let randomIndex;
+            do {
+                randomIndex = Math.floor(Math.random() * quotesInCurrentCategory.length);
+            } while (seenQuotesByCategory[currentCategory].includes(randomIndex));
+
+            seenQuotesByCategory[currentCategory].push(randomIndex);
+            
+            const newQuote = quotesInCurrentCategory[randomIndex];
+            
+            categoryTitle.innerText = currentCategory;
+            displayQuote(newQuote);
+        }
+
+        function showPreviousQuote() {
+            if (quoteHistory.length > 0) {
+                const lastState = quoteHistory.pop();
+                currentCategory = lastState.category;
+                applyTheme(lastState.theme);
+                categoryTitle.innerText = currentCategory;
+                displayQuote(lastState.quote);
+                quoteCounter--; 
+            }
+        }
+        
+        function updateUI() {
+            const currentQuote = quoteTextElement.innerText;
+            if (favorites.includes(currentQuote)) {
+                favoriteButton.classList.add('favorited');
+                favoriteButton.innerText = '♥';
+            } else {
+                favoriteButton.classList.remove('favorited');
+                favoriteButton.innerText = '♡';
+            }
+            prevQuoteButton.disabled = quoteHistory.length === 0;
+        }
+
+        function wrapText(context, text, x, y, maxWidth, lineHeight) {
+            const words = text.split(' ');
+            let line = '';
+            let lines = [];
+            for (let n = 0; n < words.length; n++) {
+                const testLine = line + words[n] + ' ';
+                const metrics = context.measureText(testLine);
+                const testWidth = metrics.width;
+                if (testWidth > maxWidth && n > 0) {
+                    lines.push(line);
+                    line = words[n] + ' ';
+                } else {
+                    line = testLine;
+                }
+            }
+            lines.push(line);
+            let startY = y - (lines.length - 1) * lineHeight / 2;
+            for (let i = 0; i < lines.length; i++) {
+                context.fillText(lines[i].trim(), x, startY + (i * lineHeight));
+            }
+        }
+
+        async function generateQuoteImage() {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = 1200;
+            canvas.height = 630;
+            const bgImage = new Image();
+            bgImage.crossOrigin = 'anonymous';
+            const imageUrl = currentTheme.background.slice(5, -2);
+            bgImage.src = imageUrl;
+
+            await new Promise((resolve) => {
+                bgImage.onload = resolve;
+                bgImage.onerror = () => {
+                    ctx.fillStyle = '#111';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    resolve();
+                };
+            });
+            
+            ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.55)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            const quote = `“${quoteTextElement.innerText}”`;
+            ctx.fillStyle = '#FFFFFF';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.font = 'bold 60px Poppins';
+            wrapText(ctx, quote, canvas.width / 2, canvas.height / 2, 1000, 70);
+            ctx.font = '24px Poppins';
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+            ctx.fillText('Motive Hub', canvas.width - 100, canvas.height - 30);
+            return new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+        }
+
+        document.body.addEventListener('click', (event) => {
+            if (!event.target.closest('button')) {
+                showNewQuote();
+            }
+        });
+
+        prevQuoteButton.addEventListener('click', (event) => {
+            event.stopPropagation();
+            showPreviousQuote();
+        });
+
+        shareButton.addEventListener('click', async (event) => {
+            event.stopPropagation();
+            const quoteText = quoteTextElement.innerText;
+            const shareText = `"${quoteText}" — ${currentCategory}\n\nShared from Motive Hub`;
+            
+            try {
+                const blob = await generateQuoteImage();
+                if (navigator.canShare && navigator.canShare({ files: [new File([blob], 'motive-hub-quote.png', { type: 'image/png' })] })) {
+                    const file = new File([blob], 'motive-hub-quote.png', { type: 'image/png' });
+                    await navigator.share({
+                        files: [file],
+                        title: 'Motive Hub Quote',
+                        text: `Here's some inspiration for you!`
+                    });
+                } else if (navigator.share) {
+                    navigator.share({ title: 'Motive Hub Quote', text: shareText }).catch(err => console.log("Share failed", err));
+                } else {
+                    navigator.clipboard.writeText(shareText).then(() => alert('Quote copied to clipboard!'), () => alert(`Copy this quote:\n\n${shareText}`));
+                }
+            } catch (error) {
+                console.error('Sharing failed:', error);
+                navigator.clipboard.writeText(shareText).then(() => alert('Image share failed. Quote copied to clipboard!'), () => alert(`Copy this quote:\n\n${shareText}`));
+            }
+        });
+        
+        favoriteButton.addEventListener('click', (event) => {
+            event.stopPropagation();
+            const currentQuote = quoteTextElement.innerText;
+            const index = favorites.indexOf(currentQuote);
+            if (index > -1) {
+                favorites.splice(index, 1);
+            } else {
+                favorites.push(currentQuote);
+            }
+            localStorage.setItem('motiveHubFavorites', JSON.stringify(favorites));
+            updateUI();
+        });
+        
+        function initializeApp() {
+            applyTheme(themes[themeIndex]);
+            categoryTitle.innerText = "Inspiration";
+            displayQuote("Welcome to Motive Hub! Tap anywhere to begin.");
+            updateUI();
+        }
+
+        initializeApp();
+    </script>
+
+    <!-- PWA SCRIPT ADDED HERE -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js').then(registration => {
+                    console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                }, err => {
+                    console.log('ServiceWorker registration failed: ', err);
+                });
+            });
+        }
+    </script>
+    <!-- END OF PWA SCRIPT -->
+
+</body>
+</html>
