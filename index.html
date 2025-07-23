@@ -195,9 +195,11 @@
     <div class="container">
         <h1 id="quote-text">Welcome to Motive Hub! Tap anywhere to begin.</h1>
         <div class="button-container">
-            <button class="icon-button" id="prev-quote-button" disabled>←</button>
-            <button class="icon-button" id="share-button">📤</button>
-            <button class="icon-button" id="favorite-button">♡</button>
+    <button class="icon-button" id="prev-quote-button" disabled>←</button>
+    <button class="icon-button" id="share-button">📤</button>
+    <button class="icon-button" id="favorite-button">♡</button>
+    <!-- ADD THIS NEW BUTTON -->
+    <button class="icon-button" id="notifications-button">🔔</button>
         </div>
     </div>
 
@@ -752,19 +754,66 @@
         initializeApp();
     </script>
 
-    <!-- PWA SCRIPT ADDED HERE -->
+ <!-- FIREBASE LIBRARIES (ADD THESE) -->
+<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-messaging-compat.js"></script>
+
+<!-- SCRIPT FOR NOTIFICATION LOGIC (ADD THIS) -->
+<script>
+    // Your personal Firebase configuration object.
+    const firebaseConfig = {
+        apiKey: "AIzaSyAYsx9fuknLT6c4OplO5uCHxMsoWshyxyk",
+        authDomain: "motivateme-16ltu.firebaseapp.com",
+        databaseURL: "https://motivateme-16ltu-default-rtdb.firebaseio.com",
+        projectId: "motivateme-16ltu",
+        storageBucket: "motivateme-16ltu.firebasestorage.app",
+        messagingSenderId: "301384323477",
+        appId: "1:301384323477:web:15ff4a7f2df3bb1cdaa69c"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const messaging = firebase.messaging();
+    const notificationsButton = document.getElementById('notifications-button');
+
+    // This function runs when the user clicks the notification bell.
+    notificationsButton.addEventListener('click', () => {
+        Notification.requestPermission().then((permission) => {
+            if (permission === 'granted') {
+                console.log('Notification permission granted.');
+                // Get the device token using your VAPID key.
+                messaging.getToken({ vapidKey: 'BOvrRKMrFdCN-rymmifc82SfhyXKz-SVF7OATONxyOaeCdaTcJ1CTOxQmoI_F0LzVPkz10wcOfk64D1psEx92AM' }).then((currentToken) => {
+                    if (currentToken) {
+                        console.log('FCM Token:', currentToken);
+                        alert('You are now subscribed to notifications!');
+                    } else {
+                        alert('Could not subscribe. Please try again.');
+                    }
+                }).catch((err) => {
+                    console.error('An error occurred while retrieving token. ', err);
+                });
+            } else {
+                alert('You have denied notification permissions.');
+            }
+        });
+    });
+</script>
+
+    <!-- FIREBASE LIBRARIES (ADD THESE) -->
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-messaging-compat.js"></script>
+
+    <!-- SCRIPT FOR NOTIFICATION LOGIC (ADD THIS) -->
+    <script>
+        // ... (all the firebase code from Step 3) ...
+    </script>
+
+    <!-- SCRIPT FOR PWA SERVICE WORKER REGISTRATION (This was already here) -->
     <script>
         if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/service-worker.js').then(registration => {
-                    console.log('ServiceWorker registration successful with scope: ', registration.scope);
-                }, err => {
-                    console.log('ServiceWorker registration failed: ', err);
-                });
-            });
+            // ... (the original service worker code) ...
         }
     </script>
-    <!-- END OF PWA SCRIPT -->
 
 </body>
 </html>
